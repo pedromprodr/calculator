@@ -5,11 +5,14 @@ const divide = (a, b) => a / b;
 
 
 function operate(operator, a, b) {
-    console.log(operator, a, b);
-    if (operator === 'add') return add(a, b);
-    else if (operator === 'subtract') return subtract(a, b);
-    else if (operator === 'multiply') return multiply(a, b);
-    else if (operator === 'divide') return divide(a, b);
+    let res;
+    
+    if (operator === 'add') res = add(a, b);
+    else if (operator === 'subtract') res = subtract(a, b);
+    else if (operator === 'multiply') res = multiply(a, b);
+    else if (operator === 'divide') res = divide(a, b);
+
+    return Math.trunc(res*10000)/10000;
 }
 
 let storedValue = '0';
@@ -24,6 +27,9 @@ numKeys.forEach(key => { key.addEventListener('click', () => changeDisplay(key.i
 let opKeys = document.querySelectorAll('.opKey');
 opKeys.forEach(key => { key.addEventListener('click', () => changeOperator(key.id)) })
 
+let dotKey = document.querySelector('#dot');
+dotKey.addEventListener('click', () => addDot());
+
 let equalsKey = document.querySelector("#equals")
 equalsKey.addEventListener('click', () => equals(operatorV, storedValue, displayValue.innerHTML))
 
@@ -33,6 +39,7 @@ equalsKey.addEventListener('click', () => equals(operatorV, storedValue, display
 //adicionar o ponto e o parsefloat
 //limitar o numero de digitos
 //arranjar uma fonte bonita
+let floatInUse = false;
 
 let clearButton = document.querySelector('#clear');
 clearButton.addEventListener('click', () => clear())
@@ -43,25 +50,31 @@ function clear() {
 }
 function changeOperator(op) {
     if (operatorV!=null&&!operating) {
-        displayValue.innerHTML = operate(operatorV, parseInt(storedValue), parseInt(displayValue.innerHTML));
+        displayValue.innerHTML = operate(operatorV, parseFloat(storedValue), parseFloat(displayValue.innerHTML));
     }
     operatorV = op;
     operating = true;
     storedValue = displayValue.innerHTML;
-
+    floatInUse = false;
 }
-
+function addDot() {
+    if(!floatInUse){
+        displayValue.innerHTML = displayValue.innerHTML + '.';
+        floatInUse = true;
+    }
+}
 function equals(op, a, b) {
     console.log(op, a, b);
-    displayValue.innerHTML = operate(op, parseInt(a, 10), parseInt(b, 10))
+    displayValue.innerHTML = operate(op, parseFloat(a, 10), parseFloat(b, 10))
     operatorV = null;
-    
+    operating =true;
+    floatInUse = false;
 }
 
 function changeDisplay(value) {
-    let vals = ['', '_', '0']
+    let values = ['', '_', '0']
 
-    if (vals.includes(displayValue.innerHTML) || operating) {
+    if ((values.includes(displayValue.innerHTML)) || operating ) {
         displayValue.innerHTML = value;
         operating = false;
     } else displayValue.innerHTML = displayValue.innerHTML + value;
